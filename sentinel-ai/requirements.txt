@@ -1,0 +1,59 @@
+# ── LLM / Agent frameworks ────────────────────────────────────────
+langchain==0.3.25
+langchain-openai==0.3.16
+langchain-anthropic==0.3.15
+langchain-community==0.3.24
+openai==1.82.0
+anthropic==0.52.0
+
+# ── Deep Learning ─────────────────────────────────────────────────
+# torch 2.11.0 is the latest build with Python 3.14 wheels on PyPI
+torch==2.11.0
+torchvision==0.26.0
+transformers==4.51.3
+timm==1.0.15
+
+# ── Data / ML ─────────────────────────────────────────────────────
+numpy==2.2.6
+pandas==2.2.3
+scikit-learn==1.6.1
+scipy==1.15.3
+
+# ── Reinforcement Learning ────────────────────────────────────────
+gymnasium==1.1.1
+stable-baselines3==2.6.0
+
+# ── Data stores ───────────────────────────────────────────────────
+elasticsearch==8.17.2
+neo4j==5.28.1
+redis==5.2.1
+
+# ── Network / Packet capture ──────────────────────────────────────
+scapy==2.6.1
+pyshark==0.6
+
+# ── API / Web ─────────────────────────────────────────────────────
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+websockets==15.0.1
+httpx==0.28.1
+starlette==0.46.2
+
+# ── Configuration / Validation ────────────────────────────────────
+pydantic==2.11.4
+pydantic-settings==2.9.1
+python-dotenv==1.1.0
+
+# ── Visualization ─────────────────────────────────────────────────
+matplotlib==3.10.3
+Pillow==11.2.1
+
+# ── Logging / CLI ─────────────────────────────────────────────────
+loguru==0.7.3
+rich==14.0.0
+
+# ── Utilities ─────────────────────────────────────────────────────
+tenacity==9.1.2
+aiofiles==24.1.0
+python-multipart==0.0.20
+ujson==5.10.0

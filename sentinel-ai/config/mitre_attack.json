@@ -1,0 +1,465 @@
+{
+  "version": "14.1",
+  "techniques": [
+    {
+      "technique_id": "T1190",
+      "name": "Exploit Public-Facing Application",
+      "tactic": "Initial Access",
+      "tactic_id": "TA0001",
+      "description": "Adversaries may attempt to exploit a weakness in an Internet-facing host or system to initially access a network. The weakness in the system can be a software bug, a temporary glitch, or a misconfiguration.",
+      "indicators": [
+        "Unusual HTTP status codes (500, 403) in rapid succession",
+        "SQL injection patterns in web logs",
+        "Directory traversal sequences (../)",
+        "Abnormal payload sizes in POST requests",
+        "Requests to admin endpoints from external IPs"
+      ],
+      "mitigation_actions": [
+        "Apply patches and updates immediately",
+        "Implement WAF rules to block exploit patterns",
+        "Enable rate limiting on public endpoints",
+        "Review and restrict exposed services",
+        "Enable detailed application logging"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Application Log", "Network Traffic"]
+    },
+    {
+      "technique_id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "tactic_id": "TA0001",
+      "description": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion.",
+      "indicators": [
+        "Login from unusual geographic location",
+        "Login outside normal business hours",
+        "Multiple failed logins followed by success",
+        "Concurrent sessions from different IPs",
+        "Access to resources not previously accessed"
+      ],
+      "mitigation_actions": [
+        "Enforce multi-factor authentication",
+        "Implement impossible travel detection",
+        "Review and audit account permissions",
+        "Enable conditional access policies",
+        "Monitor for credential stuffing patterns"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Authentication Logs", "User Account"]
+    },
+    {
+      "technique_id": "T1059",
+      "name": "Command and Scripting Interpreter",
+      "tactic": "Execution",
+      "tactic_id": "TA0002",
+      "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms.",
+      "indicators": [
+        "PowerShell with encoded commands (-EncodedCommand)",
+        "cmd.exe spawned by unusual parent process",
+        "Python/bash scripts executed from temp directories",
+        "WScript or CScript executing .vbs files",
+        "Obfuscated script content"
+      ],
+      "mitigation_actions": [
+        "Enable PowerShell script block logging",
+        "Restrict script execution via AppLocker/WDAC",
+        "Monitor for encoded command execution",
+        "Implement application whitelisting",
+        "Alert on scripts in temp/user directories"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Process Creation", "Script Execution", "Command Execution"]
+    },
+    {
+      "technique_id": "T1053",
+      "name": "Scheduled Task/Job",
+      "tactic": "Persistence",
+      "tactic_id": "TA0003",
+      "description": "Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code. Utilities exist within all major operating systems to schedule programs or scripts to be executed at a specified date and time.",
+      "indicators": [
+        "New scheduled tasks created by non-admin users",
+        "Tasks executing from unusual directories",
+        "Tasks with encoded or obfuscated commands",
+        "Cron jobs added to /etc/cron.d or user crontabs",
+        "Tasks running at unusual intervals"
+      ],
+      "mitigation_actions": [
+        "Audit scheduled tasks regularly",
+        "Restrict task creation to administrators",
+        "Monitor task creation events (Event ID 4698)",
+        "Implement task signing requirements",
+        "Alert on tasks in suspicious directories"
+      ],
+      "severity": "MEDIUM",
+      "data_sources": ["Scheduled Job", "Process Creation", "File Modification"]
+    },
+    {
+      "technique_id": "T1547",
+      "name": "Boot or Logon Autostart Execution",
+      "tactic": "Persistence",
+      "tactic_id": "TA0003",
+      "description": "Adversaries may configure system settings to automatically execute a program during system boot or logon to maintain persistence or gain higher-level privileges on compromised systems.",
+      "indicators": [
+        "New registry run keys added",
+        "Startup folder modifications",
+        "New services created with suspicious binaries",
+        "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run modifications",
+        "Unusual entries in /etc/init.d or systemd"
+      ],
+      "mitigation_actions": [
+        "Monitor registry run key modifications",
+        "Audit startup folder contents",
+        "Implement registry access controls",
+        "Alert on new service installations",
+        "Review autostart locations regularly"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Windows Registry", "File Creation", "Process Creation"]
+    },
+    {
+      "technique_id": "T1068",
+      "name": "Exploitation for Privilege Escalation",
+      "tactic": "Privilege Escalation",
+      "tactic_id": "TA0004",
+      "description": "Adversaries may exploit software vulnerabilities in an attempt to elevate privileges. Exploitation of a software vulnerability occurs when an adversary takes advantage of a programming error in a program, service, or within the operating system software.",
+      "indicators": [
+        "Process running with elevated privileges unexpectedly",
+        "Kernel exploit signatures in memory",
+        "Unusual SUID/SGID binary execution on Linux",
+        "Token impersonation attempts",
+        "Privilege escalation CVE exploit patterns"
+      ],
+      "mitigation_actions": [
+        "Apply security patches promptly",
+        "Enable exploit protection (DEP, ASLR)",
+        "Monitor for privilege changes",
+        "Implement least privilege principles",
+        "Use endpoint detection and response tools"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["Process Creation", "User Account Modification"]
+    },
+    {
+      "technique_id": "T1055",
+      "name": "Process Injection",
+      "tactic": "Defense Evasion",
+      "tactic_id": "TA0005",
+      "description": "Adversaries may inject code into processes in order to evade process-based defenses as well as possibly elevate privileges. Process injection is a method of executing arbitrary code in the address space of a separate live process.",
+      "indicators": [
+        "Unusual cross-process memory writes",
+        "CreateRemoteThread API calls",
+        "Hollowed process with mismatched image paths",
+        "Unexpected DLL loads in trusted processes",
+        "Reflective DLL injection patterns"
+      ],
+      "mitigation_actions": [
+        "Enable Windows Defender Credential Guard",
+        "Monitor for suspicious API calls",
+        "Implement behavior-based detection",
+        "Use memory integrity protection",
+        "Alert on unusual DLL loads"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Process Access", "OS API Execution", "Module Load"]
+    },
+    {
+      "technique_id": "T1562",
+      "name": "Impair Defenses",
+      "tactic": "Defense Evasion",
+      "tactic_id": "TA0005",
+      "description": "Adversaries may maliciously modify components of a victim environment in order to hinder or disable defensive mechanisms. This not only involves impairing preventative defenses, such as firewalls and anti-virus, but also detection capabilities.",
+      "indicators": [
+        "Antivirus service stopped or disabled",
+        "Windows Defender exclusions added",
+        "Audit log clearing (Event ID 1102)",
+        "Firewall rules modified or disabled",
+        "EDR agent process terminated"
+      ],
+      "mitigation_actions": [
+        "Protect security tool processes from termination",
+        "Alert on security service state changes",
+        "Implement tamper protection",
+        "Monitor audit log clearing events",
+        "Use centralized log management"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["Windows Registry", "Process Creation", "Service Modification"]
+    },
+    {
+      "technique_id": "T1110",
+      "name": "Brute Force",
+      "tactic": "Credential Access",
+      "tactic_id": "TA0006",
+      "description": "Adversaries may use brute force techniques to gain access to accounts when passwords are unknown or when password hashes are obtained. Without knowledge of the password for an account or set of accounts, an adversary may systematically guess the password.",
+      "indicators": [
+        "High volume of failed authentication attempts",
+        "Sequential username enumeration",
+        "Password spray patterns (one password, many users)",
+        "Credential stuffing from known breach lists",
+        "Rapid authentication attempts from single IP"
+      ],
+      "mitigation_actions": [
+        "Implement account lockout policies",
+        "Enable multi-factor authentication",
+        "Deploy CAPTCHA on login forms",
+        "Block IPs with excessive failures",
+        "Monitor for password spray patterns"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Authentication Logs", "User Account"]
+    },
+    {
+      "technique_id": "T1003",
+      "name": "OS Credential Dumping",
+      "tactic": "Credential Access",
+      "tactic_id": "TA0006",
+      "description": "Adversaries may attempt to dump credentials to obtain account login and credential material, normally in the form of a hash or a clear text password, from the operating system and software.",
+      "indicators": [
+        "LSASS process memory access",
+        "Mimikatz signatures in process memory",
+        "SAM database access attempts",
+        "NTDS.dit file access",
+        "Volume shadow copy creation followed by SAM access"
+      ],
+      "mitigation_actions": [
+        "Enable Windows Credential Guard",
+        "Protect LSASS with RunAsPPL",
+        "Monitor LSASS memory access",
+        "Implement privileged access workstations",
+        "Rotate credentials after suspected compromise"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["Process Access", "OS API Execution", "File Access"]
+    },
+    {
+      "technique_id": "T1082",
+      "name": "System Information Discovery",
+      "tactic": "Discovery",
+      "tactic_id": "TA0007",
+      "description": "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture. Adversaries may use the information from System Information Discovery during automated discovery to shape follow-on behaviors.",
+      "indicators": [
+        "systeminfo.exe execution",
+        "uname -a or /etc/os-release access",
+        "WMI queries for OS information",
+        "Registry queries for system version",
+        "Rapid enumeration of system properties"
+      ],
+      "mitigation_actions": [
+        "Monitor for enumeration tool execution",
+        "Implement application whitelisting",
+        "Alert on bulk WMI queries",
+        "Log and review discovery activity",
+        "Correlate with other suspicious activity"
+      ],
+      "severity": "LOW",
+      "data_sources": ["Process Creation", "OS API Execution", "Command Execution"]
+    },
+    {
+      "technique_id": "T1046",
+      "name": "Network Service Discovery",
+      "tactic": "Discovery",
+      "tactic_id": "TA0007",
+      "description": "Adversaries may attempt to get a listing of services running on remote hosts and local network infrastructure devices, including those that may be vulnerable to remote exploitation through services.",
+      "indicators": [
+        "Port scan patterns (sequential port access)",
+        "Nmap or masscan signatures",
+        "ICMP sweep across subnet",
+        "Service banner grabbing",
+        "Unusual outbound connection attempts to many ports"
+      ],
+      "mitigation_actions": [
+        "Implement network segmentation",
+        "Deploy intrusion detection systems",
+        "Alert on port scan patterns",
+        "Block scanning tools at perimeter",
+        "Monitor for internal reconnaissance"
+      ],
+      "severity": "MEDIUM",
+      "data_sources": ["Network Traffic", "Process Creation"]
+    },
+    {
+      "technique_id": "T1021",
+      "name": "Remote Services",
+      "tactic": "Lateral Movement",
+      "tactic_id": "TA0008",
+      "description": "Adversaries may use Valid Accounts to log into a service specifically designed to accept remote connections, such as telnet, SSH, and VNC. The adversary may then perform actions as the logged-on user.",
+      "indicators": [
+        "SSH connections between internal hosts",
+        "RDP connections from unusual sources",
+        "WinRM connections to multiple hosts",
+        "SMB lateral movement patterns",
+        "Pass-the-hash or pass-the-ticket activity"
+      ],
+      "mitigation_actions": [
+        "Restrict lateral movement with firewall rules",
+        "Implement privileged access management",
+        "Monitor for unusual remote service usage",
+        "Require MFA for remote access",
+        "Segment network to limit blast radius"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Network Traffic", "Authentication Logs", "Process Creation"]
+    },
+    {
+      "technique_id": "T1570",
+      "name": "Lateral Tool Transfer",
+      "tactic": "Lateral Movement",
+      "tactic_id": "TA0008",
+      "description": "Adversaries may transfer tools or other files between systems in a compromised environment. Once brought into the victim environment (i.e., Ingress Tool Transfer) files may then be copied from one system to another to stage adversary tools or other files over the course of an operation.",
+      "indicators": [
+        "SMB file transfers between internal hosts",
+        "Unusual file copies via admin shares",
+        "BITS jobs transferring executables",
+        "Certutil used to download files",
+        "PowerShell Invoke-WebRequest to internal hosts"
+      ],
+      "mitigation_actions": [
+        "Monitor SMB traffic between workstations",
+        "Restrict admin share access",
+        "Alert on executable transfers",
+        "Implement file integrity monitoring",
+        "Block BITS abuse with policies"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Network Traffic", "File Creation", "Process Creation"]
+    },
+    {
+      "technique_id": "T1041",
+      "name": "Exfiltration Over C2 Channel",
+      "tactic": "Exfiltration",
+      "tactic_id": "TA0010",
+      "description": "Adversaries may steal data by exfiltrating it over an existing command and control channel. Stolen data is encoded into the normal communications channel using the same protocol as command and control communications.",
+      "indicators": [
+        "Large outbound data transfers to unusual destinations",
+        "Encrypted traffic to non-standard ports",
+        "Beaconing patterns with data payloads",
+        "DNS queries with unusually long subdomains",
+        "HTTP POST requests with large bodies to external IPs"
+      ],
+      "mitigation_actions": [
+        "Implement data loss prevention (DLP)",
+        "Monitor and alert on large outbound transfers",
+        "Block connections to known C2 infrastructure",
+        "Inspect encrypted traffic with SSL inspection",
+        "Implement egress filtering"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["Network Traffic", "Command Execution"]
+    },
+    {
+      "technique_id": "T1048",
+      "name": "Exfiltration Over Alternative Protocol",
+      "tactic": "Exfiltration",
+      "tactic_id": "TA0010",
+      "description": "Adversaries may steal data by exfiltrating it over a different protocol than that of the existing command and control channel. The data may also be sent to an alternate network location from the main command and control server.",
+      "indicators": [
+        "DNS tunneling patterns (high volume, long queries)",
+        "ICMP packets with unusual payload sizes",
+        "FTP/SFTP to external hosts",
+        "Unusual SMTP traffic with attachments",
+        "Data encoded in DNS TXT records"
+      ],
+      "mitigation_actions": [
+        "Implement DNS monitoring and filtering",
+        "Block unnecessary outbound protocols",
+        "Monitor ICMP payload sizes",
+        "Restrict outbound FTP/SFTP",
+        "Deploy DNS security solutions"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["Network Traffic", "DNS Records"]
+    },
+    {
+      "technique_id": "T1486",
+      "name": "Data Encrypted for Impact",
+      "tactic": "Impact",
+      "tactic_id": "TA0040",
+      "description": "Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. They can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key.",
+      "indicators": [
+        "Mass file rename operations (adding extensions)",
+        "High volume of file write operations",
+        "Ransom note files created",
+        "Shadow copy deletion (vssadmin delete shadows)",
+        "Backup catalog deletion"
+      ],
+      "mitigation_actions": [
+        "Maintain offline backups",
+        "Implement file activity monitoring",
+        "Alert on mass file modifications",
+        "Protect shadow copies",
+        "Isolate affected systems immediately"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["File Modification", "Process Creation", "Command Execution"]
+    },
+    {
+      "technique_id": "T1195",
+      "name": "Supply Chain Compromise",
+      "tactic": "Initial Access",
+      "tactic_id": "TA0001",
+      "description": "Adversaries may manipulate products or product delivery mechanisms prior to receipt by a final consumer for the purpose of data or system compromise. Supply chain compromise can take place at any stage of the supply chain.",
+      "indicators": [
+        "Software update from unexpected source",
+        "Signed binary with unusual network behavior",
+        "Unexpected outbound connections after software update",
+        "Modified build artifacts",
+        "Unusual certificate chains in software"
+      ],
+      "mitigation_actions": [
+        "Verify software integrity with checksums",
+        "Implement software composition analysis",
+        "Monitor post-update network behavior",
+        "Use trusted software repositories only",
+        "Implement zero-trust for software updates"
+      ],
+      "severity": "CRITICAL",
+      "data_sources": ["File Modification", "Network Traffic", "Process Creation"]
+    },
+    {
+      "technique_id": "T1566",
+      "name": "Phishing",
+      "tactic": "Initial Access",
+      "tactic_id": "TA0001",
+      "description": "Adversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing.",
+      "indicators": [
+        "Email with malicious attachment opened",
+        "Link to credential harvesting page clicked",
+        "Macro-enabled document execution",
+        "Unusual process spawned from email client",
+        "Outbound connection after document open"
+      ],
+      "mitigation_actions": [
+        "Implement email filtering and sandboxing",
+        "Disable macros by default",
+        "Deploy anti-phishing training",
+        "Enable email authentication (DMARC/DKIM/SPF)",
+        "Monitor for suspicious email client child processes"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Email", "File Creation", "Process Creation"]
+    },
+    {
+      "technique_id": "T1071",
+      "name": "Application Layer Protocol",
+      "tactic": "Command and Control",
+      "tactic_id": "TA0011",
+      "description": "Adversaries may communicate using OSI application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server.",
+      "indicators": [
+        "HTTP/HTTPS beaconing at regular intervals",
+        "DNS requests to newly registered domains",
+        "Unusual user-agent strings",
+        "HTTP traffic to IP addresses (no hostname)",
+        "Periodic connections with consistent byte counts"
+      ],
+      "mitigation_actions": [
+        "Implement network traffic analysis",
+        "Block connections to newly registered domains",
+        "Monitor for beaconing patterns",
+        "Inspect HTTP headers for anomalies",
+        "Deploy DNS sinkholes for known C2 domains"
+      ],
+      "severity": "HIGH",
+      "data_sources": ["Network Traffic", "DNS Records"]
+    }
+  ]
+}
