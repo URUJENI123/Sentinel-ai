@@ -92,6 +92,25 @@ Sentinel AI is a production-grade autonomous cybersecurity system that combines 
 
 ---
 
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Backend API | FastAPI, Uvicorn |
+| Real-time alerts | WebSockets |
+| Agent reasoning | LangChain (OpenAI + Anthropic), GPT-4 / Claude |
+| Deep learning | PyTorch |
+| Vision Transformer | Vision Transformer (ViT) + Torch/Torchvision |
+| ML anomaly detection | scikit-learn (e.g., Isolation Forest) |
+| RL mitigation | Gymnasium, Stable-Baselines3 (PPO) |
+| Log ingestion | Elasticsearch |
+| Network capture | Scapy / PyShark |
+| Event queue / pub-sub | Redis |
+| Attack graph analytics | Neo4j |
+| Orchestration / distribution | Docker, Docker Compose |
+
+---
+
 ## Components
 
 | Component | Description |
@@ -160,6 +179,80 @@ docker-compose up -d
 
 ---
 
+## CLI Commands
+
+Run Sentinel AI using `python main.py` with the following commands:
+
+### API Server (Default)
+
+```bash
+python main.py api
+```
+
+Starts the FastAPI server on `http://0.0.0.0:8000` with real-time threat detection, alert streaming, and REST endpoints.
+
+### Train RL Agent
+
+```bash
+python main.py train --timesteps 100000
+```
+
+Train the reinforcement learning mitigation agent using PPO. Options:
+
+```bash
+python main.py train --timesteps 200000 --save-path ./models/agent.pkl
+```
+
+- `--timesteps`: Number of training timesteps (default: 100,000)
+- `--save-path`: Directory to save trained model (optional)
+
+### Run Threat Simulation
+
+```bash
+python main.py simulate --scenario brute_force_ssh --intensity 0.8
+```
+
+Generate synthetic threat scenarios for testing and RL training.
+
+**Available scenarios:**
+- `apt_lateral_movement` — Advanced persistent threat with lateral movement
+- `brute_force_ssh` — SSH password attack simulation (default)
+- `data_exfiltration` — Data theft scenario
+- `ransomware` — Ransomware deployment
+- `insider_threat` — Internal threat behavior
+- `port_scan_recon` — Network reconnaissance
+- `web_exploit` — Web application attack
+
+**Options:**
+```bash
+python main.py simulate \
+  --scenario ransomware \
+  --intensity 0.5 \
+  --duration 300
+```
+
+- `--scenario`: Attack scenario (default: `brute_force_ssh`)
+- `--intensity`: Threat intensity 0.0-1.0 (default: 0.5)
+- `--duration`: Simulation duration in seconds (optional)
+
+### Detection Pipeline Only
+
+```bash
+python main.py detect
+```
+
+Run the anomaly detection pipeline without the API server. Processes logs from Elasticsearch and outputs alerts to console.
+
+### Global Options
+
+```bash
+python main.py --log-level DEBUG api
+```
+
+- `--log-level`: Override logging verbosity (DEBUG, INFO, WARNING, ERROR)
+
+---
+
 ## Environment Variables
 
 | Variable | Description | Default |
@@ -199,25 +292,6 @@ WS   /ws/alerts                       Real-time alert stream
 curl -X POST http://localhost:8000/threats/threat-001/mitigate \
   -H "Content-Type: application/json" \
   -d '{"action": "block_ip", "dry_run": false}'
-```
-
----
-
-## Training the RL Agent
-
-```bash
-python -m agents.rl_agent --train --timesteps 100000
-```
-
----
-
-## Running Simulations
-
-```bash
-# Start a specific attack scenario
-curl -X POST http://localhost:8000/simulation/start \
-  -H "Content-Type: application/json" \
-  -d '{"scenario": "apt_lateral_movement", "intensity": 0.7}'
 ```
 
 ---
