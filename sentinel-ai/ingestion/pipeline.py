@@ -18,8 +18,9 @@ import redis.asyncio as aioredis
 from loguru import logger
 
 from config.settings import get_settings
-from ingestion.log_ingester import LogIngester, NormalisedLog
-from ingestion.packet_ingester import PacketFeatures, PacketIngester
+from ingestion.log_ingester import LogIngester
+from ingestion.packet_ingester import PacketIngester
+
 
 
 # ── Metrics ───────────────────────────────────────────────────────
@@ -74,6 +75,11 @@ class IngestionPipeline:
     """
     Coordinates log and packet ingestion, buffers events in Redis,
     and provides a unified async event stream for downstream consumers.
+
+    Notes:
+        If Redis is unreachable, the pipeline enters a degraded mode and will
+        not buffer/stream events via Redis (so the app can keep running).
+
 
     Architecture:
         LogIngester  ──┐
@@ -151,17 +157,28 @@ class IngestionPipeline:
     # ── Redis connection ──────────────────────────────────────────
 
     async def _connect_redis(self) -> None:
-        """Connect to Redis with retry logic."""
+        """Connect to Redis with retry logic.
+
+        If Redis is unavailable, the pipeline enters degraded mode and will
+        continue running without buffering/streaming events via Redis.
+        """
         for attempt in range(5):
             try:
+                redis_url = self._redis_cfg.url  # type: ignore[attr-defined]
+                redis_password = self._redis_cfg.password or None  # type: ignore[attr-defined]
+                redis_db = self._redis_cfg.db  # type: ignore[attr-defined]
+                max_connections = self._redis_cfg.max_connections  # type: ignore[attr-defined]
+                socket_timeout = self._redis_cfg.socket_timeout  # type: ignore[attr-defined]
+
                 self._redis = aioredis.from_url(
-                    self._redis_cfg.url,
-                    password=self._redis_cfg.password or None,
-                    db=self._redis_cfg.db,
-                    max_connections=self._redis_cfg.max_connections,
-                    socket_timeout=self._redis_cfg.socket_timeout,
+                    redis_url,
+                    password=redis_password,
+                    db=redis_db,
+                    max_connections=max_connections,
+                    socket_timeout=socket_timeout,
                     decode_responses=True,
                 )
+
                 await self._redis.ping()
                 logger.info("Connected to Redis at {}", self._redis_cfg.url)
                 return
@@ -173,7 +190,13 @@ class IngestionPipeline:
                 )
                 await asyncio.sleep(wait)
 
-        raise RuntimeError("Failed to connect to Redis after 5 attempts")
+        # Degraded mode
+        self._redis = None
+        logger.error(
+            "Redis unreachable at {} after 5 attempts. Running ingestion in degraded mode (no Redis queue).",
+            self._redis_cfg.url,
+        )
+
 
     # ── Ingestion workers ─────────────────────────────────────────
 
@@ -212,7 +235,8 @@ class IngestionPipeline:
             self._metrics.events_queued += 1
 
             # Trim queue to prevent unbounded growth
-            max_size = self._settings.ingestion.max_queue_size
+            max_size = self._settings.ingestion.max_queue_size  # type: ignore[attr-defined]
+
             queue_len = await self._redis.llen(self.QUEUE_KEY)
             if queue_len > max_size:
                 await self._redis.ltrim(self.QUEUE_KEY, 0, max_size - 1)
@@ -230,7 +254,11 @@ class IngestionPipeline:
         Blocks until events are available.
         """
         if not self._redis:
-            raise RuntimeError("Pipeline not started. Call start() first.")
+            raise RuntimeError(
+                "Redis is not connected (ingestion pipeline started in degraded mode). "
+                "Start Redis or set REDIS_URL to a reachable Redis instance."
+            )
+
 
         logger.info("Starting event stream from Redis queue")
         while self._running:
@@ -263,6 +291,10 @@ class IngestionPipeline:
     async def _publish_metrics(self) -> None:
         """Periodically publish pipeline metrics to Redis."""
         while self._running:
+            if not self._redis:
+                await asyncio.sleep(10)
+                continue
+
             try:
                 metrics = self.get_metrics()
                 await self._redis.setex(
@@ -273,6 +305,7 @@ class IngestionPipeline:
             except Exception as exc:
                 logger.debug("Metrics publish error: {}", exc)
             await asyncio.sleep(10)
+
 
     def get_metrics(self) -> Dict[str, Any]:
         """Return combined pipeline metrics."""

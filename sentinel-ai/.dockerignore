@@ -1,0 +1,71 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+env/
+ENV/
+.venv/
+
+# Models and large files
+models/
+*.pkl
+*.pth
+*.bin
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Testing
+tests/
+pytest.ini
+
+# Documentation
+docs/
+*.md
+EXPLAINER.md
+README.md
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+logs/
+*.log
+
+# Other
+.env
+.env.example
+docker-compose.yml
+Dockerfile

@@ -1,0 +1,307 @@
+{
+  "info": {
+    "name": "Sentinel AI API",
+    "description": "Postman collection for Sentinel AI (FastAPI) REST + WebSocket endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Threats",
+      "item": [
+        {
+          "name": "GET /threats/active",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/threats/active",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "threats",
+                "active"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /threats/:threatId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/threats/{{threatId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "threats",
+                "{{threatId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /threats/:alertId/mitigate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"block_ip\",\n  \"dry_run\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/threats/{{alertId}}/mitigate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "threats",
+                "{{alertId}}",
+                "mitigate"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Graph",
+      "item": [
+        {
+          "name": "GET /graph/attack-path/:hostIp",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/graph/attack-path/{{hostIp}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graph",
+                "attack-path",
+                "{{hostIp}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /graph/blast-radius/:hostIp",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/graph/blast-radius/{{hostIp}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graph",
+                "blast-radius",
+                "{{hostIp}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /graph/compromised-hosts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/graph/compromised-hosts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graph",
+                "compromised-hosts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /graph/technique-frequency",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/graph/technique-frequency",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graph",
+                "technique-frequency"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simulation",
+      "item": [
+        {
+          "name": "GET /simulation/scenarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/simulation/scenarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simulation",
+                "scenarios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /simulation/active",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/simulation/active",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simulation",
+                "active"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /simulation/start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"brute_force_ssh\",\n  \"intensity\": 0.8,\n  \"duration\": 300\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/simulation/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simulation",
+                "start"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /simulation/stop/:simulationId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/simulation/stop/{{simulationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "simulation",
+                "stop",
+                "{{simulationId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "WebSocket (manual test)",
+      "item": [
+        {
+          "name": "WS /ws/alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{wsUrl}}/ws/alerts",
+              "host": [
+                "{{wsUrl}}"
+              ],
+              "path": [
+                "ws",
+                "alerts"
+              ]
+            },
+            "description": "Use Postman WebSocket client to connect to ws://HOST/ws/alerts (set wsUrl)."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "wsUrl",
+      "value": "ws://localhost:8000"
+    },
+    {
+      "key": "threatId",
+      "value": "threat-001"
+    },
+    {
+      "key": "alertId",
+      "value": "threat-001"
+    },
+    {
+      "key": "hostIp",
+      "value": "127.0.0.1"
+    },
+    {
+      "key": "simulationId",
+      "value": "sim-001"
+    }
+  ]
+}
+
